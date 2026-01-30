@@ -1,0 +1,166 @@
+[project]
+name = "migration-tool"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Alex Zakiryanov",email = "alexmainacc0unt@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">3.13,<3.14"
+dependencies = [
+    "alembic>=1.18.3",
+    "sqlalchemy>=2.0.0",
+    "psycopg2-binary>=2.9.0"
+]
+
+
+[tool.poetry]
+package-mode = false
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.ruff]
+exclude = [
+    ".git",
+    ".git-rewrite",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".venv",
+    ".vscode",
+    "__pycache__",
+    "__pypackages__",
+    "thirdparty",
+    "migrations",
+]
+line-length = 140
+indent-width = 4
+target-version = "py310"
+
+
+[tool.ruff.lint]
+# https://docs.astral.sh/ruff/rules
+select = [
+    "F",
+    "E",
+    "W",
+    "C90",
+    "I",
+    "N",
+    "D",
+    "UP",
+    "ANN",
+    "ASYNC",
+    "S",
+    "BLE",
+    "B",
+    "A",
+    "COM",
+    "C4",
+    "DTZ",
+    "T10",
+    "ISC",
+    "ICN",
+    "LOG",
+    "G",
+    "INP",
+    "PIE",
+    "T20",
+    "PT",
+    "Q",
+    "RSE",
+    "RET",
+    "SLF",
+    "SLOT",
+    "SIM",
+    "TID",
+    "TCH",
+    "INT",
+    "ARG",
+    "PTH",
+    "ERA",
+    "PGH",
+    "PLC",
+    "PLE",
+    "PLR",
+    "PLW",
+    "TRY",
+    "FLY",
+    "PERF",
+    "RUF",
+    "D213",
+]
+ignore = [
+    "D101",
+    "D104",
+    "D107",
+    "D100",
+    "D212",
+    "D300",
+    "COM812",
+    "T201",
+    "RUF002",
+    "ERA001",
+    "INP001",
+    "RUF012",
+    "UP009",
+    "PLR0913",
+    "SLF001",
+    "ANN002",
+    "ANN003",
+
+    "D102",
+    "D103",
+    "D105",
+    "D106",
+    "D202",
+]
+fixable = ["ALL"]
+unfixable = []
+
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"typing.TypedDict".msg = "Use typing_extensions.TypedDict instead."
+
+
+[tool.ruff.lint.flake8-quotes]
+inline-quotes = "single"
+docstring-quotes = "single"
+multiline-quotes = "single"
+
+
+[tool.ruff.lint.isort]
+force-to-top = ["typing"]
+lines-after-imports = 2
+
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["E402"]
+"**/{intests,docs,tools}/*" = ["S101", "S104", "S106", "E501"]
+"inplatform/urls.py" = ["I001", "E501"]
+"inplatform/settings/**/*.py" = ["F403", "F405"]
+
+
+[tool.ruff.format]
+indent-style = "space"
+line-ending = "lf"
+skip-magic-trailing-comma = false
+docstring-code-format = false
+docstring-code-line-length = "dynamic"
+
+[dependency-groups]
+dev = [
+    "ruff (>=0.14.14,<0.15.0)"
+]
