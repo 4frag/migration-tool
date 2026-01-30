@@ -9,7 +9,7 @@ from sqlalchemy.schema import SchemaItem
 
 
 # Настройка логирования
-logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 def include_object(
@@ -34,8 +34,8 @@ class DatabaseSyncer:
         logger.info('=' * 60)
 
         try:
-            source_engine = create_engine(source_dsn, echo=True)
-            target_engine = create_engine(target_dsn, echo=True)
+            source_engine = create_engine(source_dsn, connect_args={'connect_timeout': 1})
+            target_engine = create_engine(target_dsn, connect_args={'connect_timeout': 1})
 
             # Шаг 1: Отражение эталона
             source_metadata = MetaData()
@@ -89,13 +89,18 @@ class DatabaseSyncer:
                 cls._apply_operations(operation.ops, conn, op)
                 continue
 
+            # Безопасный бэкап
+            if isinstance(operation, DropColumnOp):
+                confirm = input(f'⚠️ Confirm dropping column {operation.column_name} from table {operation.table_name}? (y/n): ')
+                if confirm.lower() != 'y':
+                    raise ValueError('Operation cancelled by user.')  # noqa: TRY003
+                cls._backup_column(conn, operation)
+            elif isinstance(operation, DropTableOp):
+                confirm = input(f'⚠️ Confirm dropping table {operation.table_name}? (y/n): ')
+                if confirm.lower() != 'y':
+                    raise ValueError('Operation cancelled by user.')  # noqa: TRY003
+                cls._backup_table(conn, operation)
             try:
-                # Безопасный бэкап
-                if isinstance(operation, DropColumnOp):
-                    cls._backup_column(conn, operation)
-                elif isinstance(operation, DropTableOp):
-                    cls._backup_table(conn, operation)
-
                 op.invoke(operation)
                 logger.info('✓ Applied: %s', operation)
             except Exception:
